@@ -1,0 +1,6 @@
+[package]
+name = "rfloat"
+version = "0.1.0"
+authors = ["GHIAT Houssem <ghiat.houssem@gmail.com>"]
+
+[dependencies]
