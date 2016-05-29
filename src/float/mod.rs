@@ -1,11 +1,12 @@
 
 use std::ops::{Add, Sub, Mul, Div, Rem, Neg};
-use std::ops::{AddAssign,SubAssign,MulAssign,DivAssign,RemAssign};
+use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign, RemAssign};
 use std::num::FpCategory;
-use num_traits::{ParseFloatError,Num,Float};
-use num_traits::identities::{Zero, One};
-use num_traits::cast::{ToPrimitive,NumCast};
 use std::fmt;
+use num_traits::{ParseFloatError, Num, Float};
+use num_traits::identities::{Zero, One};
+use num_traits::cast::{ToPrimitive, NumCast};
+
 
 #[derive(Clone,Copy,Debug,PartialEq,PartialOrd)]
 #[allow(non_camel_case_types)]
@@ -70,51 +71,61 @@ macro_rules! impl_trait_ops_assign {
     ($($t:ident $st:ident),*) => {
     	$(
     		impl AddAssign<$t> for $t {
+    			#[inline(never)]
     			fn add_assign(&mut self, rhs: $t) {
     				self.0 = self.0 + rhs.0;
     			}
     		}
     		impl AddAssign<$st> for $t {
+    			#[inline(never)]
     			fn add_assign(&mut self, rhs: $st) {
     				self.0 = self.0 + rhs;
     			}
     		}
     		impl SubAssign<$t> for $t {
+    			#[inline(never)]
     			fn sub_assign(&mut self, rhs: $t) {
     				self.0 = self.0 - rhs.0;
     			}
     		}
     		impl SubAssign<$st> for $t {
+    			#[inline(never)]
     			fn sub_assign(&mut self, rhs: $st) {
     				self.0 = self.0 - rhs;
     			}
     		}
     		impl MulAssign<$t> for $t {
+    			#[inline(never)]
     			fn mul_assign(&mut self, rhs: $t) {
     				self.0 = self.0 * rhs.0;
     			}
     		}
     		impl MulAssign<$st> for $t {
+    			#[inline(never)]
     			fn mul_assign(&mut self, rhs: $st) {
     				self.0 = self.0 * rhs;
     			}
     		}
     		impl DivAssign<$t> for $t {
+    			#[inline(never)]
     			fn div_assign(&mut self, rhs: $t) {
     				self.0 = self.0 / rhs.0;
     			}
     		}
     		impl DivAssign<$st> for $t {
+    			#[inline(never)]
     			fn div_assign(&mut self, rhs: $st) {
     				self.0 = self.0 / rhs;
     			}
     		}
     		impl RemAssign<$t> for $t {
+    			#[inline(never)]
     			fn rem_assign(&mut self, rhs: $t) {
     				self.0 = self.0 % rhs.0;
     			}
     		}
     		impl RemAssign<$st> for $t {
+    			#[inline(never)]
     			fn rem_assign(&mut self, rhs: $st) {
     				self.0 = self.0 % rhs;
     			}
@@ -150,6 +161,7 @@ macro_rules! impl_trait_num {
     	$(
     		impl Num for $t {
     			type FromStrRadixErr = ParseFloatError;
+    			#[inline]
     			fn from_str_radix(src: &str, radix: u32) -> Result<Self,Self::FromStrRadixErr>{
     				match $st::from_str_radix(src,radix) {
     					Ok(n) => Ok($t(n)),
@@ -165,9 +177,11 @@ macro_rules! impl_trait_toPrimitive {
     ($($t:ident $st:ident),*) => {
     	$(
     		impl ToPrimitive for $t {
+    			#[inline]
     			fn to_i64(&self) -> Option<i64> {
     				self.0.to_i64()
     			}
+    			#[inline]
     			fn to_u64(&self) -> Option<u64> {
     				self.0.to_u64()
     			}
@@ -176,22 +190,20 @@ macro_rules! impl_trait_toPrimitive {
     }
 }
 
-
-//FIXME: I need to understand why this macro don't work.
-// macro_rules! impl_trait_numcast {
-//     ($($t:ident $st:ident),*) => {
-//     	$(
-//     		impl NumCast for $t {
-//     			fn from<T: ToPrimitive>(n: T) -> Option<Self> {
-//     				match n.to_$st() {
-//     					Some(num) => Some($t(num)),
-//     					_ => None 
-//     				}
-//     			}
-//     		}
-//     	)*
-//     }
-// }
+macro_rules! impl_trait_numcast {
+    ($($t:ident $st:ident),*) => {
+    	$(
+    		impl NumCast for $t {
+    			fn from<T: ToPrimitive>(n: T) -> Option<Self> {
+    				match n.$st() {
+    					Some(num) => Some($t(num)),
+    					_ => None 
+    				}
+    			}
+    		}
+    	)*
+    }
+}
 
 macro_rules! impl_trait_float {
     ($($t:ident $st:ident),*) => {
@@ -265,6 +277,7 @@ macro_rules! impl_trait_display {
     ($($t:ident $st:ident),*) => {
     	$(
     		impl fmt::Display for $t {
+    			#[inline]
     			fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     				$st::fmt(&self.0, f)
     			}
@@ -277,25 +290,7 @@ impl_trait_ops!(rf32, rf64); // Implement +,-,*,/,%,-
 impl_trait_ops_assign!(rf32 f32, rf64 f64); // Implement +=,-=,*=,/=,%=
 impl_trait_identities!(rf32 f32,rf64 f64); // Implement Zero,One
 impl_trait_num!(rf32 f32,rf64 f64); // Implement Num trait
-impl_trait_toPrimitive!(rf32 f32,rf64 f64);
-
-//impl_trait_numcast!(rf32 f32,rf64 f64);
-impl NumCast for rf32 {
-	fn from<T: ToPrimitive>(n: T) -> Option<Self> {
-		match n.to_f32() {
-			Some(num) => Some(rf32(num)),
-			_ => None
-		}
-	}
-}
-impl NumCast for rf64 {
-	fn from<T: ToPrimitive>(n: T) -> Option<Self> {
-		match n.to_f64() {
-			Some(num) => Some(rf64(num)),
-			_ => None
-		}
-	}
-}
-
+impl_trait_toPrimitive!(rf32 f32,rf64 f64); // Implement ToPrimitive trait
+impl_trait_numcast!(rf32 to_f32,rf64 to_f64); // Implement NumCast trait
 impl_trait_float!(rf32 f32,rf64 f64); // Implement Float trait
-impl_trait_display!(rf32 f32,rf64 f64);
+impl_trait_display!(rf32 f32,rf64 f64); // Implement Display trait
