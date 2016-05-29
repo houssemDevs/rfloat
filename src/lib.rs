@@ -7,5 +7,11 @@
 extern crate num_traits;
 
 
+pub mod simd;
+
 mod float;
 pub use float::{rf32,rf64};
+
+
+mod floatx2;
+pub use floatx2::rf32x2;

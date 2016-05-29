@@ -4,23 +4,30 @@ extern crate num_traits;
 
 
 use num_traits::{Float,Num};
-use rfloat::{rf64,rf32};
+use rfloat::rf32x2;
+use rfloat::simd::SseArth;
 use frounding::RoundingState;
 
-fn main() {    
-    let mut x = rf64(1.0);
-    let y = rf64(3.0);
-    {
-    	let mut rstate = RoundingState::new();
-    	rstate.upward();
-    	println!("{:.17}", x / y);
-    	rstate.downward();
-    	println!("{:.17}", x / y);
-   	 	println!("{}", x == y);
-    	println!("{}", x.sin());
-    }
-    let tt = rf64::from_str_radix("23.4E2", 10);
-    println!("{}", tt.unwrap());
-    x += 15.0;
-    println!("{}", x);
+fn main() {
+    let mut rs = RoundingState::new();
+    let a: rf32x2 = rf32x2 { v0: 1.0f32, v1: 1.0f32 };
+    let b: rf32x2 = rf32x2 { v0: 3.0f32, v1: 3.0f32 };
+    rs.upward();
+    println!("rounding sse {}, fpu {}",rs.current_rounding().0, rs.current_rounding().1);
+    println!("1,1/3,3 {}", a.divps(b));
+    println!("1,1+3,3 {}", a.addps(b));
+    println!("1,1x3,3 {}", a.mulps(b));
+    println!("1,1-3,3 {}", a.subps(b));
+    println!("sqrt(3,3) {}", b.sqrtps());
+    println!("max(1,1;3,3) {}", a.maxps(b));
+    println!("min(1,1;3,3) {}", a.minps(b));
+    rs.downward();
+    println!("rounding sse {}, fpu {}",rs.current_rounding().0, rs.current_rounding().1);
+    println!("1,1/3,3 {}", a.divps(b));
+    println!("1,1+3,3 {}", a.addps(b));
+    println!("1,1x3,3 {}", a.mulps(b));
+    println!("1,1-3,3 {}", a.subps(b));
+    println!("sqrt(3,3) {}", b.sqrtps());
+    println!("max(1,1;3,3) {}", a.maxps(b));
+    println!("min(1,1;3,3) {}", a.minps(b));
 }

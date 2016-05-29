@@ -1,4 +1,6 @@
 
+//! Define floating point scalar types (scalar in oposition to vector (simd)).:
+
 use std::ops::{Add, Sub, Mul, Div, Rem, Neg};
 use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign, RemAssign};
 use std::num::FpCategory;
@@ -286,11 +288,11 @@ macro_rules! impl_trait_display {
     }
 }
 
-impl_trait_ops!(rf32, rf64); // Implement +,-,*,/,%,-
-impl_trait_ops_assign!(rf32 f32, rf64 f64); // Implement +=,-=,*=,/=,%=
-impl_trait_identities!(rf32 f32,rf64 f64); // Implement Zero,One
-impl_trait_num!(rf32 f32,rf64 f64); // Implement Num trait
-impl_trait_toPrimitive!(rf32 f32,rf64 f64); // Implement ToPrimitive trait
-impl_trait_numcast!(rf32 to_f32,rf64 to_f64); // Implement NumCast trait
-impl_trait_float!(rf32 f32,rf64 f64); // Implement Float trait
-impl_trait_display!(rf32 f32,rf64 f64); // Implement Display trait
+impl_trait_ops!(rf32, rf64); 					// Implement +,-,*,/,%,-
+impl_trait_ops_assign!(rf32 f32, rf64 f64); 	// Implement +=,-=,*=,/=,%=
+impl_trait_identities!(rf32 f32,rf64 f64); 		// Implement Zero,One
+impl_trait_num!(rf32 f32,rf64 f64); 			// Implement Num trait
+impl_trait_toPrimitive!(rf32 f32,rf64 f64); 	// Implement ToPrimitive trait
+impl_trait_numcast!(rf32 to_f32,rf64 to_f64); 	// Implement NumCast trait
+impl_trait_float!(rf32 f32,rf64 f64); 			// Implement Float trait
+impl_trait_display!(rf32 f32,rf64 f64); 		// Implement Display trait
