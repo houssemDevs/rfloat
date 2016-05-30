@@ -1,4 +1,4 @@
-#![warn(missing_docs)]
+//#![warn(missing_docs)]
 #![feature(float_extras)]
 
 //!rfloat is a wrap of floating primitive types of rust. Its purpose is to avoid LLVM
@@ -6,12 +6,13 @@
 
 extern crate num_traits;
 
-
+#[allow(dead_code)]
 pub mod simd;
 
+#[allow(dead_code)]
 mod float;
 pub use float::{rf32,rf64};
 
-
+#[allow(dead_code)]
 mod floatx2;
 pub use floatx2::rf32x2;
