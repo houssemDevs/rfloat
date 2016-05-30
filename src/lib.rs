@@ -7,12 +7,19 @@
 extern crate num_traits;
 
 #[allow(dead_code)]
-pub mod simd;
+mod simd;
 
-#[allow(dead_code)]
 mod float;
 pub use float::{rf32,rf64};
 
 #[allow(dead_code)]
 mod floatx2;
+#[cfg(sse)]
 pub use floatx2::rf32x2;
+#[cfg(sse2)]
+pub use floatx2::rf64x2;
+
+#[allow(dead_code)]
+mod floatx4;
+#[cfg(sse)]
+pub use floatx4::rf32x4;
